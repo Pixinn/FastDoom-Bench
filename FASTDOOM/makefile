@@ -120,7 +120,8 @@ GLOBOBJS_Y = &
  f_wipe.obj &
  info.obj &
  dmx.obj &
- mus2mid.obj
+ mus2mid.obj &
+ b_bench.obj
 
 GLOBOBJS_13H = &
  ns_dpmi.obj &
@@ -207,7 +208,8 @@ GLOBOBJS_13H = &
  f_wipe.obj &
  info.obj &
  dmx.obj &
- mus2mid.obj
+ mus2mid.obj &
+ b_bench.obj
 
 GLOBOBJS_VBE = &
  ns_dpmi.obj &
