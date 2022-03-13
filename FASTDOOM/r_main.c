@@ -40,6 +40,8 @@
 
 #include "st_stuff.h"
 
+#include "b_bench.h"
+
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW 2048
 
@@ -1189,13 +1191,18 @@ void R_SetupFrame(player_t *player)
 //
 void R_RenderPlayerView(player_t *player)
 {
+
+    B_BenchStart();
     R_SetupFrame(player);
+    B_BenchEnd(R_SETUPFRAME);
 
     // Clear buffers.
+    B_BenchStart();
     R_ClearClipSegs();
     R_ClearDrawSegs();
     R_ClearPlanes();
     R_ClearSprites();
+    B_BenchEnd(R_CLEARBUFFERS);
 
     // check for new console commands.
     NetUpdate();
@@ -1208,7 +1215,7 @@ void R_RenderPlayerView(player_t *player)
     }
 #endif
 
-    // The head node is the last node output.
+    // The head node is the last node output.    
     R_RenderBSPNode(firstnode);
 
     // Check for new console commands.
@@ -1247,6 +1254,7 @@ void R_RenderPlayerView(player_t *player)
         R_DrawPlanes();
 #endif
 #ifdef MODE_Y
+    B_BenchStart();
     if (flatSurfaces)
         switch (detailshift)
         {
@@ -1262,6 +1270,7 @@ void R_RenderPlayerView(player_t *player)
         }
     else
         R_DrawPlanes();
+    B_BenchEnd(R_DRAWPLANES);
 #endif
 #if defined(USE_BACKBUFFER)
     if (flatSurfaces)
@@ -1279,7 +1288,9 @@ void R_RenderPlayerView(player_t *player)
     // Check for new console commands.
     NetUpdate();
 
+    B_BenchStart();
     R_DrawMasked();
+    B_BenchEnd(R_DRAWMASKED);
 
     // Check for new console commands.
     NetUpdate();

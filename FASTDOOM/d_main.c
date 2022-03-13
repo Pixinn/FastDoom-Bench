@@ -242,13 +242,15 @@ void D_Display(void)
     {
     case GS_LEVEL:
         if (!gametic)
-            break;
+            break;        
 #if defined(MODE_Y) || defined(USE_BACKBUFFER) || defined(MODE_VBE2_DIRECT)
         if (automapactive)
         {
             // [crispy] update automap while playing
             R_RenderPlayerView(&players);
+            B_BenchStart();
             AM_Drawer();
+            B_BenchEnd(MAP2D);
 #if defined(USE_BACKBUFFER)
             updatestate |= I_FULLVIEW;
 #endif
@@ -262,10 +264,12 @@ void D_Display(void)
         if (!automapactive || (automapactive && !fullscreen))
         {
             redrawsbar = wipe || (viewheight != 200 && fullscreen) || (inhelpscreensstate && !inhelpscreens); // just put away the help screen
+            B_BenchStart();
             ST_Drawer(screenblocks, redrawsbar);
+            B_BenchEnd(STATUSBAR2D);
         }
 #endif
-
+        
         fullscreen = viewheight == 200;
         break;
 
@@ -380,7 +384,9 @@ void D_Display(void)
     }
 
     // menus go directly to the screen
+    B_BenchStart();
     M_Drawer(); // menu is drawn even on top of everything
+    B_BenchEnd(MENU2D);
 
 #if defined(MODE_Y) || defined(USE_BACKBUFFER) || defined(MODE_VBE2_DIRECT)
     if (screenblocks == 11 && gamestate == GS_LEVEL)
@@ -454,11 +460,15 @@ void D_DoomLoop(void)
     if (demorecording)
         G_BeginRecording();
 
+    B_BenchStart();
     I_InitGraphics();
+    B_BenchEnd(INITGFX);
 
     while (1)
-    {
         // process one or more tics
+    {
+
+        B_BenchStart();
         if (singletics)
         {
             I_StartTic();
@@ -475,8 +485,11 @@ void D_DoomLoop(void)
         {
             TryRunTics(); // will run at least one tic
         }
+        B_BenchEnd(RUNTICK);
 
+        B_BenchStart();
         S_UpdateSounds(players.mo); // move positional sounds
+        B_BenchEnd(UPDATESOUND);
 
         // Update display, next frame, with current state.
         D_Display();
@@ -946,6 +959,7 @@ void D_DoomMain(void)
     char file[256];
     union REGS regs;
 
+    B_Init();
     IdentifyVersion();
 
 #if defined(MODE_EGA) || defined(MODE_PCP) || defined(MODE_CGA16) || defined(MODE_EGA16) || defined(MODE_VGA16)

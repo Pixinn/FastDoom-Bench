@@ -34,6 +34,8 @@
 
 #include "sizeopt.h"
 
+#include "b_bench.h"
+
 seg_t *curline;
 side_t *sidedef;
 line_t *linedef;
@@ -511,6 +513,8 @@ void R_RenderBSPNode(int bspnum)
 
     while (true)
     {
+
+        B_BenchStart();
         //Front sides.
         while ((bspnum & NF_SUBSECTOR) == 0)
         {
@@ -535,11 +539,18 @@ void R_RenderBSPNode(int bspnum)
 
             bspnum = bsp->children[side];
         }
+        B_BenchEnd(R_BSPNODE_FRONT);
 
-        if (bspnum == -1)
+        if (bspnum == -1) {
+            B_BenchStart();
             R_Subsector(0);
-        else
+            B_BenchEnd(R_BSPNODE_SUBSECTOR);
+        }
+        else {
+            B_BenchStart();
             R_Subsector(bspnum & (~NF_SUBSECTOR));
+            B_BenchEnd(R_BSPNODE_SUBSECTOR);
+        }
 
         if (sp == 0)
         {
@@ -548,7 +559,7 @@ void R_RenderBSPNode(int bspnum)
         }
 
         //Back sides.
-
+        B_BenchStart();
         sp--;
 
         bspnum = stack_bsp[sp];
@@ -563,6 +574,7 @@ void R_RenderBSPNode(int bspnum)
             if (sp == 0)
             {
                 //back at root node and not visible. All done!
+                B_BenchEnd(R_BSPNODE_BACK);
                 return;
             }
 
@@ -577,5 +589,6 @@ void R_RenderBSPNode(int bspnum)
         }
 
         bspnum = bsp->children[side ^ 1];
+        B_BenchEnd(R_BSPNODE_BACK);
     }
 }

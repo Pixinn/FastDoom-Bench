@@ -63,6 +63,8 @@
 
 #include "s_sound.h"
 
+#include "b_bench.h"
+
 #define SAVEGAMESIZE 0x2c000
 #define SAVESTRINGSIZE 24
 
@@ -1252,7 +1254,10 @@ void G_CheckDemoStatus(void)
             }
         }
 
+        B_Flush();
+        printf("Bench logged in Bench.csv\n");
         I_Error("Timed %i gametics in %i realtics. FPS: %i.%03i", gametic, realtics, resultfps >> FRACBITS, Mul1000(resultfps & 65535) >> FRACBITS);
+        
     }
 
     if (demoplayback)

@@ -42,6 +42,8 @@
 
 #include "std_func.h"
 
+#include "b_bench.h"
+
 #if defined(MODE_VBE2) || defined(MODE_VBE2_DIRECT)
 #include "i_vesa.h"
 #endif
@@ -1235,7 +1237,10 @@ void I_UpdateBox(int x, int y, int w, int h)
 int olddb[2][4];
 void I_UpdateNoBlit(void)
 {
+    
     int realdr[4];
+
+    B_BenchStart();
 
     // Set current screen
     currentscreen = destscreen;
@@ -1312,6 +1317,7 @@ void I_UpdateNoBlit(void)
     // Clear box
     dirtybox[BOXTOP] = dirtybox[BOXRIGHT] = MININT;
     dirtybox[BOXBOTTOM] = dirtybox[BOXLEFT] = MAXINT;
+    B_BenchEnd(UPDATENOBLIT);
 }
 #endif
 
@@ -2100,6 +2106,9 @@ void I_FinishUpdate(void)
     static int fps_counter, fps_starttime, fps_nextcalculation;
     int opt1, opt2;
 
+
+    B_BenchStart();
+
 #ifndef MODE_HERC
     if (waitVsync)
     {
@@ -2413,6 +2422,9 @@ void I_FinishUpdate(void)
             fps_counter = 0; // flush old data
         }
     }
+
+    B_BenchEnd(FINISHUPDATE);
+    B_NextFrame();
 }
 
 //
@@ -3231,6 +3243,8 @@ void I_Quit(void)
     regs.h.dh = 23;
     int386(0x10, (union REGS *)&regs, &regs); // Set text pos
     printf("\n");
+
+    B_Flush();
 
     exit(0);
 }

@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+
 /* 0xB4 = 0b10110100  - channel 2 - access lohi - mode 2 - binary */
 /* in  al, 0x43 to introduce a delay before the useful IO access  */
 /*                                                                */
@@ -39,15 +43,62 @@ int counter_read();
 modify [eax]                    \
 value  [eax]                    
 
-void B_CounterStart()
+
+typedef struct  {    
+    unsigned short int frameNr;
+    unsigned short int time; 
+    unsigned char      id;
+} benchElem_t;
+
+#define BENCH_NB_ELEMS 250000
+static benchElem_t  BenchStorage[BENCH_NB_ELEMS];
+static benchElem_t* Current;
+static clock_t TimeRef;
+static unsigned long int FrameNr = 0;
+void B_Init()
+{
+    memset(BenchStorage, 0, BENCH_NB_ELEMS * sizeof(benchElem_t));
+    Current = &BenchStorage[0];
+    TimeRef = clock();
+}
+
+void B_BenchStart()
 {
     counter_start();
 }
 
 
-int B_CounterRead()
+void B_BenchEnd(const unsigned char id)
 {
-    return counter_read();
+    Current->frameNr = FrameNr;
+    Current->time = 0xFFFFF - counter_read();
+    Current->id = id;
+    if(Current++ == &BenchStorage[BENCH_NB_ELEMS]) {
+        Current = &BenchStorage[0];
+    }
 }
 
+
+void B_Flush()
+{
+    int i;
+    benchElem_t* pElem = &BenchStorage[0];
+    FILE* pFile;
+    pFile = fopen ("bench.csv","w");
+    if (pFile)
+    {
+        fprintf(pFile, "TIMESTAMP;BENCH;ID\n");
+        for(i = 0; i < BENCH_NB_ELEMS; i++)
+        {
+            fprintf(pFile, "%u;%u;%u\n", pElem->frameNr, pElem->time, pElem->id);
+            pElem++;
+        }
+        fclose(pFile);
+    }
+}
+
+void B_NextFrame()
+{
+    FrameNr++;
+}
 

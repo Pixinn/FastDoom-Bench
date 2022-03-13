@@ -38,6 +38,8 @@ if "%2"=="V36" GOTO mode_v36
 if "%2"=="VBD" GOTO mode_vbd
 if "%2"=="VBR" GOTO mode_vbr
 if "%2"=="Y"   GOTO mode_y
+if "%2"=="y"   GOTO mode_y
+if "%2"=="bench" GOTO bench
 
 :mode_13h
 set base=fdoom13h.exe
@@ -192,6 +194,12 @@ goto compile_mode
 :mode_y
 set base=fdoomy.exe
 set executable=fdoom.exe
+set options=/dMODE_Y
+goto compile_mode
+
+:bench
+set base=fdoomy.exe
+set executable=fbench.exe
 set options=/dMODE_Y
 goto compile_mode
 
