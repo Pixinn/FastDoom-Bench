@@ -58,6 +58,7 @@ file        File containing the bench data.
 ''')
     parser.add_argument("file", help="File containing the bench data.")
     parser.add_argument("begin", help="Beginning frame")
+    parser.add_argument("stride", help="Frame stride")
     args = parser.parse_args()
     ## sanity
     if not os.path.isfile(args.file):
@@ -91,9 +92,10 @@ file        File containing the bench data.
     frames = []
     functions = defaultdict(list)
     frameNr = int(args.begin)
-    for frame in bench[frameNr:]:
+    stride = int(args.stride)
+    for frame in bench[frameNr::stride]:
         frames.append(frameNr)
-        frameNr = frameNr + 1
+        frameNr = frameNr + stride
         for func, time in enumerate(frame):
             functions[FUNCTIONS[func]].append(time)
     
@@ -101,12 +103,15 @@ file        File containing the bench data.
     plt.figure(figsize=(22,14))
     firstFct = True
     prevFunc = ""
+    bottoms = [0] * len(functions[FUNCTIONS[0]])
     for func in functions:
         if firstFct:
             firstFct = False
-            plt.bar(frames, functions[func], 1, label = func)
+            plt.bar(frames, functions[func], stride, label = func)
         else:
-            plt.bar(frames, functions[func], 1, bottom=functions[prevFunc], label = func)
+            for i in range(len(bottoms)):
+                bottoms[i] = bottoms[i] + functions[prevFunc][i]
+            plt.bar(frames, functions[func], stride, bottom=bottoms, label = func)
         prevFunc = func
 
     # Display    
