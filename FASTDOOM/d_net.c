@@ -24,6 +24,9 @@
 #include "doomstat.h"
 #include "d_main.h"
 
+
+#include "b_bench.h"
+
 //
 // NETWORKING
 //
@@ -74,17 +77,22 @@ int gametime;
 
 void NetUpdate(void)
 {
+
 	int nowtime;
 	int newtics;
 	int i, j;
+
+    B_BenchStart();
 
 	// check time
 	nowtime = ticcount;
 	newtics = nowtime - gametime;
 	gametime = nowtime;
 
-	if (newtics <= 0) // nothing new to update
+	if (newtics <= 0) { // nothing new to update
+        B_BenchEnd(MISC);
 		return;
+    }
 
 	if (skiptics <= newtics)
 	{
@@ -109,10 +117,14 @@ void NetUpdate(void)
 		maketic++;
 	}
 
-	if (singletics)
+	if (singletics) {
+        B_BenchEnd(MISC);
 		return; // singletic update is syncronous
+    }
 
 	nettics = ExpandTics((byte)maketic);
+
+    B_BenchEnd(MISC);
 }
 
 //

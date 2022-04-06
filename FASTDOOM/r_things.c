@@ -36,6 +36,8 @@
 
 #include "sizeopt.h"
 
+#include "b_bench.h"
+
 #define SC_INDEX 0x3C4
 
 #define MINZ (FRACUNIT * 4)

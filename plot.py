@@ -24,7 +24,7 @@ def Error(msg):
     print(msg)
 
 # must be in sync with b_ben.h:
-FUNCTION_MAX = 14 
+FUNCTION_MAX = 17 
 FRAME  = 0
 TIME   = 1
 FCT_ID = 2
@@ -39,13 +39,37 @@ FUNCTIONS = [
         "R_SETUPFRAME",
         "R_CLEARBUFFERS",
         "R_BSPNODE_FRONT",
-        "R_BSPNODE_SUBSECTOR",
+        "R_BSPNODE_FINDPLANE",
+        "R_BSPNODE_ADDSPRITES",
+        "R_BSPNODE_ADDLINE",
         "R_BSPNODE_BACK",
         "R_DRAWPLANES",
         "R_DRAWMASKED",
         "UPDATENOBLIT",
-        "FINISHUPDATE"
+        "FINISHUPDATE",
+        "MISC"
     ];
+
+COLORS = [
+        "black",
+        "skyblue",
+        "forestgreen",
+        "silver",
+        "blue",
+        "red",
+        "yellow",
+        "cyan",
+        "fuchsia",
+        "chartreuse",
+        "orange",
+        "darkviolet",
+        "springgreen",
+        "bisque",
+        "indigo",
+        "coral",
+        "khaki",
+        "green"
+]
 
 if __name__ == '__main__':
 
@@ -104,15 +128,17 @@ file        File containing the bench data.
     firstFct = True
     prevFunc = ""
     bottoms = [0] * len(functions[FUNCTIONS[0]])
+    idx = 0
     for func in functions:
         if firstFct:
             firstFct = False
-            plt.bar(frames, functions[func], stride, label = func)
+            plt.bar(frames, functions[func], stride, label = func, color=COLORS[idx])
         else:
             for i in range(len(bottoms)):
                 bottoms[i] = bottoms[i] + functions[prevFunc][i]
-            plt.bar(frames, functions[func], stride, bottom=bottoms, label = func)
+            plt.bar(frames, functions[func], stride, bottom=bottoms, label = func, color=COLORS[idx])
         prevFunc = func
+        idx = idx + 1
 
     # Display    
     plt.xlabel("Frame number")

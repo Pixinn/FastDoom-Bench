@@ -232,6 +232,7 @@ void R_AddLine(seg_t *line)
     angle_t angle2;
     angle_t span;
     angle_t tspan;
+    
 
     curline = line;
 
@@ -475,20 +476,27 @@ void R_Subsector(int num)
     sub = &subsectors[num];
     frontsector = sub->sector;
     
+
+    B_BenchStart();
     if (frontsector->floorheight < viewz)
         floorplane = R_FindPlane(frontsector->floorheight, frontsector->floorpic, frontsector->lightlevel);
 
     if (frontsector->ceilingheight > viewz || frontsector->ceilingpic == skyflatnum)
         ceilingplane = R_FindPlane(frontsector->ceilingheight, frontsector->ceilingpic, frontsector->lightlevel);
+    B_BenchEnd(R_BSPNODE_FINDPLANE);
 
+    B_BenchStart();
     R_AddSprites(frontsector);
+    B_BenchEnd(R_BSPNODE_ADDSPRITES);
 
     line = &segs[sub->firstline];
     count = line + sub->numlines;
 
     while (line < count)
     {
+        B_BenchStart();
         R_AddLine(line);
+        B_BenchEnd(R_BSPNODE_ADDLINE);
         line++;
     }
 }
@@ -542,14 +550,14 @@ void R_RenderBSPNode(int bspnum)
         B_BenchEnd(R_BSPNODE_FRONT);
 
         if (bspnum == -1) {
-            B_BenchStart();
+            //B_BenchStart();
             R_Subsector(0);
-            B_BenchEnd(R_BSPNODE_SUBSECTOR);
+            //B_BenchEnd(R_BSPNODE_SUBSECTOR);
         }
         else {
-            B_BenchStart();
+//          B_BenchStart();
             R_Subsector(bspnum & (~NF_SUBSECTOR));
-            B_BenchEnd(R_BSPNODE_SUBSECTOR);
+//          B_BenchEnd(R_BSPNODE_SUBSECTOR);
         }
 
         if (sp == 0)

@@ -216,7 +216,9 @@ void D_Display(void)
     // change the view size if needed
     if (setsizeneeded)
     {
+        B_BenchStart();
         R_ExecuteSetViewSize();
+        B_BenchEnd(MISC);
         oldgamestate = -1; // force background redraw
         borderdrawcount = 3;
     }
@@ -233,8 +235,11 @@ void D_Display(void)
         wipe = false;
 
 #if defined(MODE_Y) || defined(USE_BACKBUFFER) || defined(MODE_VBE2_DIRECT)
-    if (gamestate == GS_LEVEL && gametic)
+    B_BenchStart();
+    if (gamestate == GS_LEVEL && gametic) {
         HU_Erase();
+    }
+    B_BenchEnd(MISC);
 #endif
 
     // do buffered drawing

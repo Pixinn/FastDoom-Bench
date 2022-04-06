@@ -1273,10 +1273,12 @@ void R_RenderPlayerView(player_t *player)
     B_BenchEnd(R_DRAWPLANES);
 #endif
 #if defined(USE_BACKBUFFER)
+    B_BenchStart();
     if (flatSurfaces)
         R_DrawPlanesFlatSurfaces_13h();
     else
         R_DrawPlanes();
+    B_BenchEnd(R_DRAWPLANES);
 #endif
 #ifdef MODE_VBE2_DIRECT
     if (flatSurfaces)
