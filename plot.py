@@ -143,7 +143,7 @@ file        File containing the bench data.
     # Display    
     plt.xlabel("Frame number")
     plt.ylabel("Time in ms")
-    plt.legend()
+    plt.legend(loc='upper left')
     plt.show()
 
     

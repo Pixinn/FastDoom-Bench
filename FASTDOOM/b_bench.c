@@ -14,7 +14,7 @@
 /* and al, 0xFD  shut Speaker                                     */
 /* or  al, 0x1   activate counter (enable timer)                  */
 void counter_start();
-#pragma aux counter_start =   \
+#pragma aux counter_start =     \
 "pushf"                         \
 "cli"                           \
 "mov al, 0xB4"                  \
@@ -29,11 +29,15 @@ void counter_start();
 "popf"                          \
 modify [eax]
 
+/* To 61h: stop counter               */
 /* xchg al, ah - x86 is little endian */
 int counter_read();
-#pragma aux counter_read =   \
+#pragma aux counter_read =      \
 "pushf"                         \
 "cli"                           \
+"in  al, 0x61"                  \
+"and al, 0xFE"                  \
+"out 0x61, al"                  \
 "xor eax, eax"                  \
 "in al,  0x42"                  \
 "mov ah,  al"                   \
@@ -50,7 +54,7 @@ typedef struct  {
     unsigned char      id;
 } benchElem_t;
 
-#define BENCH_NB_ELEMS 250000
+#define BENCH_NB_ELEMS 400000
 static benchElem_t  BenchStorage[BENCH_NB_ELEMS];
 static benchElem_t* Current;
 static clock_t TimeRef;
